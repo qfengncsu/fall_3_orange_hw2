@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1541185424911.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "183016156",
+    "id" : "441ABB97",
+    "lastKnownWriteTime" : 1541043290,
+    "last_content_update" : 1541043290,
+    "path" : "~/Desktop/Survival Analysis/Code/Lecture 1.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "59,44",
+        "scrollLine" : "56"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
