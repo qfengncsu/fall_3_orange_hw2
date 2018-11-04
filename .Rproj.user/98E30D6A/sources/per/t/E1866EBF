@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "422212233",
+    "hash" : "3357814540",
     "id" : "E1866EBF",
-    "lastKnownWriteTime" : 1541188445,
-    "last_content_update" : 1541188445796,
+    "lastKnownWriteTime" : 1541369391,
+    "last_content_update" : 1541369391707,
     "path" : "~/Documents/GitHub/fall_3_orange_hw2/Survival Analysis/HW1/HW1.R",
     "project_path" : "Survival Analysis/HW1/HW1.R",
     "properties" : {
-        "cursorPosition" : "68,0",
-        "scrollLine" : "54"
+        "cursorPosition" : "67,32",
+        "scrollLine" : "59"
     },
     "relative_order" : 1,
     "source_on_save" : false,
