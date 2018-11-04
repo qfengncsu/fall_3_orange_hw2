@@ -76,4 +76,14 @@ hazard_df <- as.data.frame(cbind(k_time, k_haz))
 ggplot(data=hazard_df, y=hazard_df$k_time, x=hazard_df$k_haz)
 
 ### cumulative hazard ###
-ggsurvplot(katrina_fit, fun = "cumhaz", palette = "grey")
+ggsurvplot(katrina_fit, fun = "cumhaz", palette = "grey",
+           xlab = "Time (in hours)",
+           color="#DE7A22",
+           legend.title = "Reason for Pump Failure",
+           ggtheme = theme_bw())
+
+ggsurvplot(katrina_fit, data = katrina, xlab= "Time (in hours)", 
+           conf.int = TRUE, palette = "#20948B",
+           legend.title = "Reason for Pump Failure",
+           ggtheme = theme_bw()
+)
