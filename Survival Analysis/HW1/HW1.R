@@ -3,6 +3,8 @@ library(data.table)
 library(survival)
 library(survminer)
 library(muhaz)
+library(ggplot2)
+
 
 katrina <- fread('Survival Analysis/Data/katrina.csv')
 
@@ -11,7 +13,7 @@ katrina <- fread('Survival Analysis/Data/katrina.csv')
 katrina_fit <- survfit(Surv(katrina$hour, katrina$survive==0) ~ 1, data=katrina)
 
 # calling this gives the sample size, #events (survive==0, failure), median, and CI
-katrina_fit
+katrina_fit #### do we need to stratify median by reason?
 #####  sample size: 770
 #####  events (pump failure): 454
 #####  median: 45
@@ -32,8 +34,11 @@ katrina_reason
 ggsurvplot(katrina_reason, conf.int = TRUE, 
            palette=c("#F4CC70", "#DE7A22","#20948B","#A43820"),
            xlab = "Time (in hours)",
+           font.x=16,
+           font.y=16,
            legend.title = "Reason for Pump Failure",
-           legend.labs = c(1,2,3,4),
+           legend.labs = c('flood','motor','surge','jammed'),
+           font.legend = list(size=16),
            ggtheme = theme_bw()
            )
 
@@ -60,9 +65,15 @@ katrina$survive2 <- ifelse(katrina$survive==0, 1, 0)
 katrina_haz <- with(katrina, kphaz.fit(hour2, survive2))
 
 # and we plot it with kphaz.plot()
-kphaz.plot(katrina_haz, main = "hazard function")
+kphaz.plot(katrina_haz, main = "Hazard Function")
 # to see why i needed to restructure this, look at the plot using week instead
 # of week2
+
+# extract values from katrina_haz and create better visualizaiton.
+k_time <- katrina_haz$time
+k_haz <- katrina_haz$haz
+hazard_df <- as.data.frame(cbind(k_time, k_haz))
+ggplot(data=hazard_df, y=hazard_df$k_time, x=hazard_df$k_haz)
 
 ### cumulative hazard ###
 ggsurvplot(katrina_fit, fun = "cumhaz", palette = "grey")
