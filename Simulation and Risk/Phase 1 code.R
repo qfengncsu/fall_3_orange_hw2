@@ -63,7 +63,7 @@ initial.cost.Avg <- mean(c(initial.cost.Crude,initial.cost.Gas,initial.cost.Dry)
 
 ############################################################
 # Simulation 1: Assume normal distribution for 2006 to 2012
-num <- 10000
+num <- 100000
 final.cost.Crude <- rep(0,num)
 final.cost.Gas <- rep(0,num)
 final.cost.Dry <- rep(0,num)
@@ -112,7 +112,6 @@ mtext("2006 Cost", at=initial.cost.Avg, col="red")
 
 ############################################################
 # Simulation 2: Use kernel density estimate for 2006 to 2012
-num <- 10000
 final.cost.Crude2 <- rep(0,num)
 final.cost.Gas2 <- rep(0,num)
 final.cost.Dry2 <- rep(0,num)
@@ -166,8 +165,24 @@ mtext("2006 Cost", at=initial.cost.Avg, col="red")
 df=data.frame(final.cost.Avg, final.cost.Crude, final.cost.Gas, final.cost.Dry,
               final.cost.Avg2, final.cost.Crude2, final.cost.Gas2, final.cost.Dry2)
 
-ggplot(data=df) + geom_density(aes(x=final.cost.Avg), fill="blue", alpha=0.5) +
-                  geom_density(aes(x=final.cost.Avg2), fill="red", alpha=0.5)
+# Get mean, median, and mode for each data set
+stats = matrix(data=rep(0, 32), nrow=4, ncol=8)
+for (i in 1:8) {
+  stats[1,i] = mean(df[,i])
+  stats[2,i] = median(df[,i])
+  stats[3,i] = quantile(df[,i], 0.05)
+  stats[4,i] = quantile(df[,i], 0.95)
+}
+
+
+ggplot(data=df) + geom_density(aes(x=final.cost.Avg), fill="blue", alpha=0.25) +
+                  geom_density(aes(x=final.cost.Avg2), fill="red", alpha=0.25) +
+                  geom_vline(aes(xintercept = initial.cost.Avg), colour="black", linetype="dashed") +
+                  geom_text(aes(x=initial.cost.Avg, y=0.00033), label="2006 Cost")
+
+ggplot(data=df) + geom_histogram(aes(x=final.cost.Avg)) +
+  geom_vline(aes(xintercept = initial.cost.Avg), colour="black", linetype="dashed") +
+  geom_text(aes(x=initial.cost.Avg, y=17500), label="2006 Cost")
 
 ggplot(data=df) + geom_density(aes(x=final.cost.Avg), colour="blue", alpha=0.5) +
                   geom_density(aes(x=final.cost.Crude), colour="red", alpha=0.5) +
