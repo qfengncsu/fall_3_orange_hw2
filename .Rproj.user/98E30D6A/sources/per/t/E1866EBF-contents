@@ -1,5 +1,6 @@
 # need these packages
 library(data.table)
+
 library(survival)
 library(survminer)
 library(muhaz)
@@ -25,7 +26,11 @@ summary(katrina_fit)
 ggsurvplot(katrina_fit, data = katrina, xlab= "Time (in hours)", 
            conf.int = TRUE, palette = "#20948B",
            legend.title = "Reason for Pump Failure",
-           ggtheme = theme_bw()
+           ggtheme = theme_bw(),
+           font.x=16,
+           font.y=16,
+           font.legend = list(size=16)
+           
            )
 
 # stratify by reason and plot
@@ -65,7 +70,8 @@ katrina$survive2 <- ifelse(katrina$survive==0, 1, 0)
 katrina_haz <- with(katrina, kphaz.fit(hour2, survive2))
 
 # and we plot it with kphaz.plot()
-kphaz.plot(katrina_haz, main = "Hazard Function")
+kphaz.plot(katrina_haz, main = "Hazard Function",cex.axis=1.2,cex.main=1.5,cex.lab=1.5) 
+
 # to see why i needed to restructure this, look at the plot using week instead
 # of week2
 
@@ -80,10 +86,10 @@ ggsurvplot(katrina_fit, fun = "cumhaz", palette = "grey",
            xlab = "Time (in hours)",
            color="#DE7A22",
            legend.title = "Reason for Pump Failure",
-           ggtheme = theme_bw())
+           ggtheme = theme_bw(),
+           font.x=16,
+           font.y=16,
+           font.legend = list(size=16)
+           )
 
-ggsurvplot(katrina_fit, data = katrina, xlab= "Time (in hours)", 
-           conf.int = TRUE, palette = "#20948B",
-           legend.title = "Reason for Pump Failure",
-           ggtheme = theme_bw()
-)
+
