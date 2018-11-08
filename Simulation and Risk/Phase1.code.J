@@ -39,8 +39,8 @@ set.seed(12345)
 Est.change <- rkde(fhat = kde(change, h = 0.07935), n = 10000)
 hist(Est.change,  breaks=50)
 
-qqnorm(Est.change)
-#normal distribution
+qqnorm(change)
+qqline(change)
 
 ########## Simulation of 2019 drilling costs #############
 
@@ -81,7 +81,7 @@ for(i in 1:100000){
         p1 = prod(p_nor)
         
         #2012 - 2015
-        p_tri = rtriangle(3, 0.07, 0.22, 0.0917)  
+        p_tri = rtriangle(3, -0.22, -0.07, -0.0917)  
         p_tri = p_tri + 1
         p2 = p1 * prod(p_tri)
         
@@ -109,6 +109,31 @@ combine = data.frame(way1$Avg, way2$Avg)
 colnames(combine) = c('Normality', 'Kernel Density')
 combine2 = melt(combine)
 colnames(combine2) = c('Method','Price')
+
+plot1 = ggplot(combine2) + 
+        geom_histogram(aes(x = Price, y = (..count..)/100000,
+                           fill = Method), alpha=0.5, bins =50, position="identity") +
+        ylab('\nRelative Frequency\n')  +
+        xlab('\n2019 Drilling Costs') +
+        ggtitle('2019 Drilling Costs by Two Simulation Methods') +
+        geom_vline(aes(xintercept = inital_avg), colour="black", linetype="dashed") +
+        annotate("text", x = 1500, y = 0.08, label = '2006 Costs', angle = 90)
+
+plot1
+
+plot2 = ggplot(way2) + 
+        geom_histogram(aes(x = Avg, y = (..count..)/100000), alpha=0.7, fill = 'turquoise3', bins =50, position="identity") +
+        ylab('Relative Frequency') +
+        xlab('2019 Drilling Costs') +
+        ggtitle('Simulation of 2019 Drilling Costs by Kernel Density') +
+        geom_vline(aes(xintercept = inital_avg), colour="black", linetype="dashed") +
+        annotate("text", x = 1500, y = 0.08, label = '2006 Costs', angle = 90)
+
+plot2
+
+quantile(a, probs = c(0.05,0.5, 0.95)) 
+quantile(b, probs = c(0.05,0.5, 0.95))
+
 
 plot = ggplot(combine2) + 
         geom_histogram(aes(x = Price, y = (..count..)/sum(..count..),
