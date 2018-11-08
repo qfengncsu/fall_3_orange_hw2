@@ -58,7 +58,7 @@ katrina_no_upgrades <- katrina %>%
                                   mean = old_lp,
                                   scale = katrina_fit$scale,
                                   distribution = katrina_fit$dist),
-         upgrade = "NA", new_time = hour, new_lp = old_lp, pred_time_diff = 0)
+         upgrade = "NA", new_time = hour, new_lp = old_lp, pred_time_diff = 0, percent_inc = 0)
 
 for (i in 1:length(katrina_no_upgrades)){
   # check to see if backup can be upgraded and if it improves survival time
@@ -66,11 +66,12 @@ for (i in 1:length(katrina_no_upgrades)){
     katrina_no_upgrades[i,"backup"] = 1
     temp_new_lp = predict(katrina_fit, newdata = katrina_no_upgrades[i,], type = "lp")
     temp_new_time = qsurvreg(1 - katrina_no_upgrades$surv_prob[i], mean = temp_new_lp, scale = katrina_fit$scale, distribution = katrina_fit$dist)
-    if (temp_new_time > katrina_no_upgrades[i,"new_time"]){
+    if (min(48,temp_new_time) > katrina_no_upgrades[i,"new_time"]){
       katrina_no_upgrades[i,"upgrade"] = "backup"
       katrina_no_upgrades[i,"new_lp"] = temp_new_lp
-      katrina_no_upgrades[i,"new_time"] = temp_new_time
-      katrina_no_upgrades[i,"pred_time_diff"] = temp_new_time - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"new_time"] = min(48,temp_new_time)
+      katrina_no_upgrades[i,"pred_time_diff"] = min(48,temp_new_time) - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"percent_inc"] = katrina_no_upgrades[i,"pred_time_diff"] / katrina_no_upgrades[i,"old_time"] * 100
     }
     katrina_no_upgrades[i,"backup"] = 0
   }
@@ -79,11 +80,12 @@ for (i in 1:length(katrina_no_upgrades)){
     katrina_no_upgrades[i,"bridgecrane"] = 1
     temp_new_lp = predict(katrina_fit, newdata = katrina_no_upgrades[i,], type = "lp")
     temp_new_time = qsurvreg(1 - katrina_no_upgrades$surv_prob[i], mean = temp_new_lp, scale = katrina_fit$scale, distribution = katrina_fit$dist)
-    if (temp_new_time > katrina_no_upgrades[i,"new_time"]){
+    if (min(48,temp_new_time) > katrina_no_upgrades[i,"new_time"]){
       katrina_no_upgrades[i,"upgrade"] = "bridgecrane"
       katrina_no_upgrades[i,"new_lp"] = temp_new_lp
-      katrina_no_upgrades[i,"new_time"] = temp_new_time
-      katrina_no_upgrades[i,"pred_time_diff"] = temp_new_time - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"new_time"] = min(48,temp_new_time)
+      katrina_no_upgrades[i,"pred_time_diff"] = min(48,temp_new_time) - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"percent_inc"] = katrina_no_upgrades[i,"pred_time_diff"] / katrina_no_upgrades[i,"old_time"] * 100
     }
     katrina_no_upgrades[i,"bridgecrane"] = 0
   }
@@ -92,11 +94,12 @@ for (i in 1:length(katrina_no_upgrades)){
     katrina_no_upgrades[i,"servo"] = 1
     temp_new_lp = predict(katrina_fit, newdata = katrina_no_upgrades[i,], type = "lp")
     temp_new_time = qsurvreg(1 - katrina_no_upgrades$surv_prob[i], mean = temp_new_lp, scale = katrina_fit$scale, distribution = katrina_fit$dist)
-    if (temp_new_time > katrina_no_upgrades[i,"new_time"]){
+    if (min(48,temp_new_time) > katrina_no_upgrades[i,"new_time"]){
       katrina_no_upgrades[i,"upgrade"] = "servo"
       katrina_no_upgrades[i,"new_lp"] = temp_new_lp
-      katrina_no_upgrades[i,"new_time"] = temp_new_time
-      katrina_no_upgrades[i,"pred_time_diff"] = temp_new_time - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"new_time"] = min(48,temp_new_time)
+      katrina_no_upgrades[i,"pred_time_diff"] = min(48,temp_new_time) - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"percent_inc"] = katrina_no_upgrades[i,"pred_time_diff"] / katrina_no_upgrades[i,"old_time"] * 100
     }
     katrina_no_upgrades[i,"servo"] = 0
   }
@@ -105,11 +108,12 @@ for (i in 1:length(katrina_no_upgrades)){
     katrina_no_upgrades[i,"trashrack"] = 1
     temp_new_lp = predict(katrina_fit, newdata = katrina_no_upgrades[i,], type = "lp")
     temp_new_time = qsurvreg(1 - katrina_no_upgrades$surv_prob[i], mean = temp_new_lp, scale = katrina_fit$scale, distribution = katrina_fit$dist)
-    if (temp_new_time > katrina_no_upgrades[i,"new_time"]){
+    if (min(48,temp_new_time) > katrina_no_upgrades[i,"new_time"]){
       katrina_no_upgrades[i,"upgrade"] = "trashrack"
       katrina_no_upgrades[i,"new_lp"] = temp_new_lp
-      katrina_no_upgrades[i,"new_time"] = temp_new_time
-      katrina_no_upgrades[i,"pred_time_diff"] = temp_new_time - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"new_time"] = min(48,temp_new_time)
+      katrina_no_upgrades[i,"pred_time_diff"] = min(48,temp_new_time) - katrina_no_upgrades[i,"old_time"]
+      katrina_no_upgrades[i,"percent_inc"] = katrina_no_upgrades[i,"pred_time_diff"] / katrina_no_upgrades[i,"old_time"] * 100
     }
     katrina_no_upgrades[i,"trashrack"] = 0
   }
@@ -118,16 +122,24 @@ for (i in 1:length(katrina_no_upgrades)){
   katrina_no_upgrades[i,"elevation"] = katrina_no_upgrades[i,"elevation"] + 1
   temp_new_lp = predict(katrina_fit, newdata = katrina_no_upgrades[i,], type = "lp")
   temp_new_time = qsurvreg(1 - katrina_no_upgrades$surv_prob[i], mean = temp_new_lp, scale = katrina_fit$scale, distribution = katrina_fit$dist)
-  if (temp_new_time > katrina_no_upgrades[i,"new_time"]){
+  if (min(48,temp_new_time) > katrina_no_upgrades[i,"new_time"]){
     katrina_no_upgrades[i,"upgrade"] = "elevation"
     katrina_no_upgrades[i,"new_lp"] = temp_new_lp
-    katrina_no_upgrades[i,"new_time"] = temp_new_time
-    katrina_no_upgrades[i,"pred_time_diff"] = temp_new_time - katrina_no_upgrades[i,"old_time"]
+    katrina_no_upgrades[i,"new_time"] = min(48,temp_new_time)
+    katrina_no_upgrades[i,"pred_time_diff"] = min(48,temp_new_time) - katrina_no_upgrades[i,"old_time"]
+    katrina_no_upgrades[i,"percent_inc"] = katrina_no_upgrades[i,"pred_time_diff"] / katrina_no_upgrades[i,"old_time"] * 100
   }
   katrina_no_upgrades[i,"elevation"] = katrina_no_upgrades[i,"elevation"] - 1
 }
 
-results = katrina_no_upgrades %>% arrange(desc(new_time)) %>% head(n=20) %>%
-  select(ID, surv_prob, old_time, new_time, pred_time_diff, upgrade)
+katrina_no_upgrades = katrina_no_upgrades %>% dplyr::filter(upgrade != "NA")
+
+results = katrina_no_upgrades %>% arrange(desc(percent_inc)) %>% head(n=20) %>%
+  select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
 
 total_time_increase = sum(results$pred_time_diff)  #about 253 hours increase (only 19 pumps upgraded due to limit 1 per pump)
+
+results2 = katrina_no_upgrades %>% arrange(old_time) %>% head(n=20) %>%
+  select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
+
+total_time_increase2 = sum(results2$pred_time_diff)
