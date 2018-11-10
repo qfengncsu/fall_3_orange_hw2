@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1541870267043.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2898242525",
+    "id" : "46D9BBBE",
+    "lastKnownWriteTime" : 1541861886,
+    "last_content_update" : 1541861886,
+    "path" : "~/Desktop/Clustering/Project/project1_qing.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "55,46",
+        "scrollLine" : "49"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
