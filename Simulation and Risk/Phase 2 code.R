@@ -140,7 +140,7 @@ for (i in 1:n){
   DR <- runif(n=n, min = 0.15, max = 0.32)          # Decline rate
   
   Both <- cbind(standardize(DR), standardize(IP))
-  Both_corr <- U %*% t(Both)
+  Both_corr <- U %*% t(Both)                     # Correlation IP and DR     
   Both_corr <- t(Both_corr)
   
   IP <- destandardize(Both_corr[,2], IP)
