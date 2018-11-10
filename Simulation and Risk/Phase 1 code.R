@@ -34,6 +34,8 @@ avg_costs <- append(costs[,5], append(costs[,6],costs[,7]))
 
 # Create histogram of arithmetic cost changes from 1991 to 2006
 hist(avg_costs, breaks=10, main='Arithmetic Change in Cost Distribution', xlab='% Change in Cost')
+qqnorm(avg_costs)
+qqline(avg_costs)
 
 ############################################################
 ######                  KDE CREATION                  ######
@@ -175,8 +177,8 @@ for (i in 1:8) {
 }
 
 
-ggplot(data=df) + geom_density(aes(x=final.cost.Avg), fill="blue", alpha=0.25) +
-                  geom_density(aes(x=final.cost.Avg2), fill="red", alpha=0.25) +
+ggplot(data=df) + geom_histogram(aes(x=final.cost.Avg), fill="blue", alpha=0.25) +
+                  geom_histogram(aes(x=final.cost.Avg2), fill="red", alpha=0.25) +
                   geom_vline(aes(xintercept = initial.cost.Avg), colour="black", linetype="dashed") +
                   geom_text(aes(x=initial.cost.Avg, y=0.00033), label="2006 Cost")
 
@@ -184,7 +186,7 @@ ggplot(data=df) + geom_histogram(aes(x=final.cost.Avg)) +
   geom_vline(aes(xintercept = initial.cost.Avg), colour="black", linetype="dashed") +
   geom_text(aes(x=initial.cost.Avg, y=17500), label="2006 Cost")
 
-ggplot(data=df) + geom_density(aes(x=final.cost.Avg), colour="blue", alpha=0.5) +
-                  geom_density(aes(x=final.cost.Crude), colour="red", alpha=0.5) +
-                  geom_density(aes(x=final.cost.Gas), colour="green", alpha=0.5) +
-                  geom_density(aes(x=final.cost.Dry), colour="orange" ,alpha=0.5)
+ggplot(data=df) + geom_density(aes(x=final.cost.Avg2), colour="blue", alpha=0.5) +
+                  geom_density(aes(x=final.cost.Crude2), colour="red", alpha=0.5) +
+                  geom_density(aes(x=final.cost.Gas2), colour="green", alpha=0.5) +
+                  geom_density(aes(x=final.cost.Dry2), colour="orange" ,alpha=0.5)
