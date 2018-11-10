@@ -137,7 +137,7 @@ katrina_no_upgrades = katrina_no_upgrades %>% dplyr::filter(upgrade != "NA")
 results = katrina_no_upgrades %>% arrange(desc(percent_inc)) %>% head(n=20) %>%
   select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
 
-total_time_increase = sum(results$pred_time_diff)  #about 253 hours increase (only 19 pumps upgraded due to limit 1 per pump)
+total_time_increase = sum(results$pred_time_diff) 
 
 results2 = katrina_no_upgrades %>% arrange(old_time) %>% head(n=20) %>%
   select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
