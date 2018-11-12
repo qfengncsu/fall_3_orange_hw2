@@ -136,9 +136,10 @@ for (i in 1:length(katrina_no_upgrades)){
 
 katrina_no_upgrades = katrina_no_upgrades %>% dplyr::filter(upgrade != "NA")
 
-results = katrina_no_upgrades %>% arrange(desc(percent_inc)) %>% head(n=20) %>%
-  select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
+results = katrina_no_upgrades %>% mutate(percent_inc = round(percent_inc, 2)) %>%
+        select(ID, surv_prob, old_time, new_time, pred_time_diff, percent_inc, upgrade)
 
+results = head(results[order(-results$percent_inc, -results$pred_time_diff ),],20)
 total_time_increase = sum(results$pred_time_diff) 
 
 results2 = katrina_no_upgrades %>% arrange(old_time) %>% head(n=20) %>%
