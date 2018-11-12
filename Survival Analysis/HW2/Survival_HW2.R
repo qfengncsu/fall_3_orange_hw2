@@ -132,6 +132,8 @@ for (i in 1:length(katrina_no_upgrades)){
   katrina_no_upgrades[i,"elevation"] = katrina_no_upgrades[i,"elevation"] - 1
 }
 
+# Ordering and filtering the results to get the "best" 20 pumps
+
 katrina_no_upgrades = katrina_no_upgrades %>% dplyr::filter(upgrade != "NA")
 
 results = katrina_no_upgrades %>% arrange(desc(percent_inc)) %>% head(n=20) %>%
