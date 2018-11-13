@@ -50,6 +50,9 @@ complete <- nwords %>% left_join(score,"listing_id") %>% mutate(avg = sscore/n)
 #exclude these three listing id from start will make the process easier.
 complete <-complete[!(complete$listing_id=="7728508" | complete$listing_id=="7856323" | complete$listing_id=="8882195" ),]
 
+#exclude listing_id with ppb=NA
+complete <-complete[!(complete$listing_id=="1426754" | complete$listing_id=="9239190" | complete$listing_id=="12627225" | complete$listing_id=="12857811" ),]
+
 complete$avg <- scale(complete$avg) #standardize the score
 
 #### calculate price/bed ####
@@ -148,13 +151,13 @@ clu4 <- subset(combined3, clus==4)
 clu5 <- subset(combined3, clus==5)
 clu6 <- subset(combined3, clus==6)
 
-mean(clu1$avg_dist) #4.537537
-mean(clu1$avg) #-0.1608696
-mean(clu1$ppb)  ### gives NA 
+median(clu6$std.avg_dist) #4.537537
+median(clu6$avg) #-0.1608696
+median(clu6$std.ppb)  ### 
 
-mean(clu2$avg_dist) #3.112559
-mean(clu2$avg) #0.6960601
-mean(clu2$ppb) # gives NA
+mean(clu6$avg_dist) #3.112559
+mean(clu6$avg) #0.6960601
+mean(clu6$ppb) # gives NA
 
 #register_google("AIzaSyDsXl1rUspZ1sLY_dnMrb1urJq_O0rVFTY")
 
@@ -168,6 +171,7 @@ ggmap(map, fullpage = TRUE) +
   geom_point(data = clu3, aes(x = longitude, y = latitude), color = 'yellow', size = 2) +
   geom_point(data = clu4, aes(x = longitude, y = latitude), color = 'orange', size = 2) +
   geom_point(data = clu5, aes(x = longitude, y = latitude), color = 'green', size = 2) +
+  geom_point(data = clu6, aes(x = longitude, y = latitude), color = 'purple', size = 2) +
   geom_point(data = attractions8, aes(x = Lon, y = Lat), color = 'black', size = 5)
 
 #Save map
