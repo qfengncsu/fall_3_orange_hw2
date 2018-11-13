@@ -166,13 +166,16 @@ load("/Users/qing/Desktop/Clustering/Project/boston.RData")
 #map <- get_map(location = "Boston", zoom = 11)
 
 ggmap(map, fullpage = TRUE) +
-  geom_point(data = clu1, aes(x = longitude, y = latitude), color = 'red', size = 2) +
-  geom_point(data = clu2, aes(x = longitude, y = latitude), color = 'blue', size = 2) +
-  geom_point(data = clu3, aes(x = longitude, y = latitude), color = 'yellow', size = 2) +
+  geom_point(data = clu1, aes(x = longitude, y = latitude), color = 'pink', size = 2) +
+  geom_point(data = clu2, aes(x = longitude, y = latitude), color = 'yellow', size = 2) +
+  geom_point(data = clu3, aes(x = longitude, y = latitude), color = 'blue', size = 2) +
   geom_point(data = clu4, aes(x = longitude, y = latitude), color = 'orange', size = 2) +
   geom_point(data = clu5, aes(x = longitude, y = latitude), color = 'green', size = 2) +
-  geom_point(data = clu6, aes(x = longitude, y = latitude), color = 'purple', size = 2) +
+  geom_point(data = clu6, aes(x = longitude, y = latitude), color = 'red', size = 2) +
   geom_point(data = attractions8, aes(x = Lon, y = Lat), color = 'black', size = 5)
 
+ggmap(map, fullpage = TRUE) +
+  geom_point(data = clu3, aes(x = longitude, y = latitude), color = 'blue', size = 2)+
+  geom_point(data = attractions8, aes(x = Lon, y = Lat), color = 'black', size = 5)
 #Save map
 #save(map,file = "boston_2.RData")
