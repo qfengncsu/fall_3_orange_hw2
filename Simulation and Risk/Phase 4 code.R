@@ -1,5 +1,5 @@
 # Orange Team 2
-# Phase 2 code
+# Phase 4 code
 
 # Load libraries
 library(dplyr)
@@ -35,19 +35,10 @@ costs$Arithmetic.Return...Dry.Well <- as.numeric(costs$Arithmetic.Return...Dry.W
 avg_costs <- append(costs[,5], append(costs[,6],costs[,7]))
 
 names(price_projections) = c("Year","High","Low","Mode")
-price_projections <- price_projections[2:16,]       # Only keep price projection info from 2020-2034
+price_projections <- price_projections[2:16,]
 
-############################################################
-######                  KDE CREATION                  ######
-############################################################
-
-# Build a kernel density estimate of the distribution of arithmetic changes for 2006 to 2012 from the 1991 to 2006 data
+# Get density for kernel density estimate for the distribution of arithmetic changes for 2006 to 2012 from the 1991 to 2006 data
 Density.costs <- density(avg_costs, bw="SJ-ste")
-Density.costs
-
-Est.costs <- rkde(fhat=kde(avg_costs, h=Density.costs$bw), n=10000)  # n is how many observations do you want
-hist(Est.costs, breaks=50, main='Arithmetic Change in Cost Distribution from 2006 to 2012', xlab='% Change in Cost')
-
 
 ############################################################
 ######                  SIMULATION                    ######
@@ -62,7 +53,6 @@ initial.cost.Gas <- costs[16,3]
 initial.cost.Dry <- costs[16,4]
 initial.cost.Avg <- mean(c(initial.cost.Crude,initial.cost.Gas,initial.cost.Dry))
 
-
 standardize <- function(x){
   x.std = (x - mean(x))/sd(x)
   return(x.std)
@@ -76,28 +66,35 @@ destandardize <- function(x.std, x){
 R <- matrix(data=cbind(1, 0.64, 0.64, 1), nrow=2)  # For IP and decline rate correlation
 U <- t(chol(R))       # finds the Choleski decomposition, t is the transpose function
 ############################################################
-n = 10000
-num_wells = 1
+n = 1000
 
-final.cost.Crude <- rep(0,n)
-final.cost.Gas <- rep(0,n)
-final.cost.Dry <- rep(0,n)
-final.cost.Avg <- rep(0,n)
+NPV_project <- rep(0,n)
 
-dry_well_cost <- rep(0,n)
-seismic_cost_pw <- rep(0,n)
-lease_costs_pw <- rep(0,n)
-overhead <- rep(0,n)
-completion_costs_pw <- rep(0,n)
-NPV <- rep(0,n)
+# Same for all wells over all iterations
+TR <- 0.046  # Tax Rate
+WACC <- 0.1  # Weighted average cost of captial
+
+x <- rep(0,15)
+for (k in 1:15){
+  x[k] <- (1+WACC)^k
+}
+
 
 for (i in 1:n){
   
-  # Estimate the drilling costs for 2019
-  ct1 <- initial.cost.Crude
-  ct2 <- initial.cost.Gas
-  ct3 <- initial.cost.Dry
-  ct4 <- initial.cost.Avg
+  num_wells = round(runif(n=1, min=10, max=30))   # Determine number of wells for a given iteration
+
+  ph = rnormTrunc(n=num_wells, mean=0.99, sd=0.05, min=0, max=1)  # Probability of hydrocarbons
+  pr = rnormTrunc(n=num_wells, mean=0.8, sd=0.1, min=0, max=1)    # Probability of reservoir
+  ppw = ph*pr  # Probability of a producing well
+
+  producing <- rep(0,num_wells)
+  for (j in 1:num_wells){
+    producing[j] <- rbinom(n=1, size=1, prob=ppw)   # Determine if each well is dry or producing
+  }
+  
+  # Estimate the drilling costs for 2019 
+  ct <- initial.cost.Avg
   
   r1 <- rkde(fhat=kde(avg_costs, h=Density.costs$bw), n=6)    # Changes from 2006 to 2012
   r2 <- rtri(n=3, min = -0.22, max = -0.07, mode = -0.0917)   # Changes from 2012 to 2015
@@ -106,69 +103,32 @@ for (i in 1:n){
   r <- append(r1,append(r2,r3))  # Combine all arithmetic changes into single vector
   
   for (j in 1:13){
-    ct1 <- ct1*(1+r[j])
-    ct2 <- ct2*(1+r[j])
-    ct3 <- ct3*(1+r[j])
-    ct4 <- ct4*(1+r[j])
+    ct <- ct * (1+r[j])
   }
-  final.cost.Crude[i] <- ct1*1000
-  final.cost.Gas[i] <- ct2*1000
-  final.cost.Dry[i] <- ct3*1000
-  final.cost.Avg[i] <- ct4*1000
+  final.cost.Avg <- ct*1000    # Drilling cost per well, same for all wells in a given iteration (since average)
   
-  # Estimate the seismic costs per well
-  seismic_cost_pw[i] <- rnorm(n=1, mean = 3, sd = 0.35) * 43000   # Seismic sections per well times cost per section
-  
-  
-  # Estimate lease costs per well
-  lease_costs_pw[i] <- rnorm(n=1, mean = 600, sd = 50) * 960      # Leased acres per well times cost per acre
-  
-  # Estimate professional overhead costs per well
-  overhead[i] <- rtri(n=num_wells, min = 17200, max = 279500, mode = 215000)
-  
-  # Estimate completion costs
-  completion_costs_pw[i] = rnorm(n=1, mean = 390000, sd = 50000)  # Completion costs per well for crude oil or natural gas
-  
-  ######  Dry Well Cost Estimates  ######
-  #######################################
-  dry_well_cost[i] <- final.cost.Avg[i] + seismic_cost_pw[i] + lease_costs_pw[i] + overhead[i]
-}
   ###### Production Risk Estimates ######
   #######################################
   
   IP <- rlnorm(n=n, meanlog = 6, sdlog = .28)     # Units of barrels of oil per day (BOPD)
-  DR <- runif(n=n, min = 0.15, max = 0.32)          # Decline rate
+  DR <- runif(n=n, min = 0.15, max = 0.32)        # Decline rate
   
   Both <- cbind(standardize(DR), standardize(IP))
-  Both_corr <- U %*% t(Both)                     # Correlation IP and DR     
+  Both_corr <- U %*% t(Both)                      # Correlation IP and DR     
   Both_corr <- t(Both_corr)
   
   IP <- destandardize(Both_corr[,2], IP)
   DR <- destandardize(Both_corr[,1], DR)
-
-for (i in 1:n){
   
-  Rate_yb = IP[i]
-  oil_prod = rep(0,15)
-  
-  for (j in 1:15){
-    Rate_ye = (1-DR[i]) * Rate_yb
-    oil_prod[j] = 365 * (Rate_yb + Rate_ye) / 2
-    Rate_yb = Rate_ye
-  }
-
   ###### Revenue Risk Estimates ######
   ####################################
   
-  # Estimate next 15 years of oil prices ($/barrel)
+  # Estimate next 15 years of oil prices ($/barrel) -> same for all wells each iteration
   oil_prices = rep(0,15)
   
-  for (j in 1:15){
-    oil_prices[j] <- rtri(n=1, min = price_projections$Low[j], max = price_projections$High[j], mode = price_projections$Mode[j])
+  for (k in 1:15){
+    oil_prices[k] <- rtri(n=1, min = price_projections$Low[k], max = price_projections$High[k], mode = price_projections$Mode[k])
   }
-  
-  # Estimate NRI rates (used per well, per year)
-  NRI = rnorm(n=1, mean = 0.75, sd = 0.02)
   
   ###### Operatining Expenses Estimates ######
   ############################################
@@ -179,29 +139,62 @@ for (i in 1:n){
   for (j in 1:15){
     op_costs_pb[j] <- rnorm(n=1, mean = 2.25, sd = 0.3)
   }
+
+  well_value <- rep(0,num_wells)
+  ###### Per Well Estimates ######
+  ################################
+  for (j in 1:num_wells){
+    
+    # Estimate the seismic costs per well (assume each well can have a different number of seismic section)
+    seismic_cost_pw <- rnorm(n=1, mean = 3, sd = 0.35) * 43000   # Seismic sections per well times cost per section
   
-  ###### NPV Calculations ######
-  ##############################
-  TR <- 0.046  # Tax Rate
-  WACC <- 0.1  # Weighted average cost of capital
   
-  x <- rep(0,15)
-  for (j in 1:15){
-    x[j] <- (1+WACC)^j
+    # Estimate lease costs per well (assume each well can be a different number of acres)
+    lease_costs_pw <- rnorm(n=1, mean = 600, sd = 50) * 960      # Leased acres per well times cost per acre
+  
+    # Estimate professional overhead costs per well
+    overhead <- rtri(n=num_wells, min = 17200, max = 279500, mode = 215000)
+    
+    if (producing[j] == 0){
+      
+      ######  Dry Well Cost Estimates  ######
+      #######################################
+      
+      well_value[j] <- (final.cost.Avg + seismic_cost_pw + lease_costs_pw + overhead)*-1  # *-1 so it's a cost
+    }
+    else{
+      
+      ######  Producing Well Estimates  ######
+      ########################################
+      
+      # Estimate completion costs
+      completion_costs_pw = rnorm(n=1, mean = 390000, sd = 50000)  # Completion costs per well for crude oil or natural gas
+      
+      Rate_yb = IP[i]
+      oil_prod = rep(0,15)
+      
+      for (k in 1:15){
+        Rate_ye = (1-DR[i]) * Rate_yb
+        oil_prod[k] = 365 * (Rate_yb + Rate_ye) / 2
+        Rate_yb = Rate_ye
+      }
+      
+      # Estimate NRI rate, different for each well, constant across years
+      NRI = rnorm(n=1, mean = 0.75, sd = 0.02)
+      
+      revenues <- oil_prod * oil_prices * NRI * (1 - TR)
+      
+      year0_costs <- final.cost.Avg + seismic_cost_pw + lease_costs_pw + overhead + completion_costs_pw
+      yearly_costs <- overhead + op_costs_pb * oil_prod
+      
+      FNR <- revenues - yearly_costs
+      
+      well_value[j] = -1 * year0_costs + sum(FNR/x)
+    }
   }
-  
-  revenues <- oil_prod * oil_prices * NRI * (1 - TR)
-  
-  year0_costs <- final.cost.Avg[i] + seismic_cost_pw[i] + lease_costs_pw[i] + overhead[i] + completion_costs_pw[i]
-  
-  yearly_costs <- overhead[i] + op_costs_pb * oil_prod
-  
-  FNR <- revenues - yearly_costs
-  
-  NPV[i] = -1 * year0_costs + sum(FNR/x)
+  NPV_project[i] = sum(well_value)
 }
 
-hist(dry_well_cost, breaks=50, main='2019 Dry Well Cost Distribution', xlab='Cost ($)')
-
-hist(NPV, breaks=50, main='2019 NPV of 15-Year Producing Well', xlab='NPV ($)')
-
+hist(NPV_project, breaks=50, main='Project NPV Distribution', xlab='Value ($)')
+range(NPV_project)
+mean(NPV_project)
