@@ -35,7 +35,7 @@ costs$Arithmetic.Return...Dry.Well <- as.numeric(costs$Arithmetic.Return...Dry.W
 avg_costs <- append(costs[,5], append(costs[,6],costs[,7]))
 
 names(price_projections) = c("Year","High","Low","Mode")
-price_projections <- price_projections[1:15,]
+price_projections <- price_projections[2:16,]       # Only keep price projection info from 2020-2034
 
 ############################################################
 ######                  KDE CREATION                  ######
@@ -182,7 +182,7 @@ for (i in 1:n){
   ###### NPV Calculations ######
   ##############################
   TR <- 0.046  # Tax Rate
-  WACC <- 0.1  # Weighted average cost of captial
+  WACC <- 0.1  # Weighted average cost of capital
   
   x <- rep(0,15)
   for (j in 1:15){
