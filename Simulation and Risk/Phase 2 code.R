@@ -154,6 +154,7 @@ for (i in 1:n){
   for (j in 1:15){
     Rate_ye = (1-DR[i]) * Rate_yb
     oil_prod[j] = 365 * (Rate_yb + Rate_ye) / 2
+    Rate_yb = Rate_ye
   }
 
   ###### Revenue Risk Estimates ######
