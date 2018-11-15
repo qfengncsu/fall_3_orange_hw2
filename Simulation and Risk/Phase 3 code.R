@@ -24,10 +24,7 @@ for (j in 1:n){
   prop_producing[j] = sum(producing)/length(producing)
 }
 
-Density.p <- density(prop_producing, bw="SJ-ste")
-Density.p
-
-VaR5 <- qkde(0.05, fhat=kde(prop_producing, h=Density.p$bw))
+VaR5 <- quantile(prop_producing, 0.05)
 
 prop_producing <- as.data.frame(prop_producing)
 tail <- filter(prop_producing, prop_producing <= VaR5)
@@ -39,6 +36,6 @@ abline(v = VaR5, col="red", lwd=2)
 mtext("5% Value at Risk", at=VaR5, col="red")
 abline(v = CVaR5, col="blue")
 
-hist(rnormTrunc(n=num_wells, mean=0.99, sd=0.05, min=0, max=1), main='Distribution of Probability of Hydrocarbons', xlab='Probability of Hydrocarbons')
+hist(rnormTrunc(n=n, mean=0.99, sd=0.05, min=0, max=1), main='Distribution of Probability of Hydrocarbons', xlab='Probability of Hydrocarbons')
 
-hist(rnormTrunc(n=num_wells, mean=0.8, sd=0.1, min=0, max=1), main='Distribution of Probability of Reservoir', xlab='Probability of Reservoir')
+hist(rnormTrunc(n=n, mean=0.8, sd=0.1, min=0, max=1), main='Distribution of Probability of Reservoir', xlab='Probability of Reservoir')
