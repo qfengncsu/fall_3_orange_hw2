@@ -6,7 +6,6 @@ library(muhaz)
 library(ggplot2)
 library(flexsurv)
 library(dplyr)
-library(flexsurv)
 
 setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Survival Analysis\\Data\\")
 
