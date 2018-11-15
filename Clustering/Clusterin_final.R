@@ -1,9 +1,3 @@
-
-##############################################
-#Diferent Way to look at it
-###############################################
-#nrc_total <- get_sentiments("afinn")
-
 #######################################################
 library(tidytext)
 library(stringr)
@@ -12,9 +6,6 @@ library(text2vec)
 library(readr)
 library(ggmap)
 
-##############################################
-#Diferent Way to look at it
-###############################################
 setwd("/Users/qing/Desktop/Clustering/Project/boston-airbnb-open-data/")
 nrc_total <- get_sentiments("afinn")
 
@@ -23,7 +14,7 @@ nrc_total <- get_sentiments("afinn")
 #keep all listings having more than 4 reviews 
 reviews <- read_csv("reviews.csv")
 #attractions <- read_csv("Attractions.csv")
-attractions8 <- read_csv("attractions8.csv")
+attractions <- read_csv("attractions.csv") # contains 8 attractions
 listings <- read_csv("listings.csv")
 
 rv <- reviews %>% group_by(listing_id) %>%
@@ -90,18 +81,17 @@ earth.dist <- function (long1, lat1, long2, lat2)
   d <- R * c
   return(d)
 }
-#attractions <- read_csv("attractions.csv")
-#attractions8 <- read_csv("attractions8.csv")
+
 calendar <- read_csv("calendar.csv")
 #lsid <- unique(new_reviews$listing_id)
 #full <- data.frame(matrix(0,nrow=length(unique(new_reviews$listing_id)),ncol = nrow((attractions))))
-full <- data.frame(matrix(0,nrow= length(unique(combined$listing_id)),ncol = nrow((attractions8))))
-names(full) <- attractions8$Attractions
+full <- data.frame(matrix(0,nrow= length(unique(combined$listing_id)),ncol = nrow((attractions))))
+names(full) <- attractions$Attractions
 rownames(full) <- combined$listing_id
 
 for (i in 1:nrow(combined)){
-  for (ii in 1:nrow(attractions8)){
-    full[i,ii]=earth.dist(attractions8$Lon[ii], attractions8$Lat[ii],	combined$longitude[i], combined$latitude[i])
+  for (ii in 1:nrow(attractions)){
+    full[i,ii]=earth.dist(attractions$Lon[ii], attractions$Lat[ii],	combined$longitude[i], combined$latitude[i])
   }
 }
 
@@ -138,10 +128,12 @@ clusters.c <- hclust(dist(toC1),method="complete")
 #clusters.a <- hclust(dist(toC1),method="average")
 
 plot(clusters.c)
+abline(h=6.05, col = 'red')
 
 combined3$clus <- cutree(clusters.c,6) #it looks like 6 clusters is reasonable
 #combined2 <- combined1 %>% mutate_all(funs( as.numeric(scale(.) )))
 #combined1$clus <- cutree(clusters.s,6) #it looks like 6 clusters is reasonable
+#rect.hclust(clusters.c, k=6, border="red")
 
 library(ggmap)
 clu1 <- subset(combined3, clus==1)
@@ -151,13 +143,13 @@ clu4 <- subset(combined3, clus==4)
 clu5 <- subset(combined3, clus==5)
 clu6 <- subset(combined3, clus==6)
 
-median(clu6$std.avg_dist) #4.537537
-median(clu6$avg) #-0.1608696
-median(clu6$std.ppb)  ### 
+median(clu6$std.avg_dist) 
+median(clu6$avg) 
+median(clu6$std.ppb)  
 
-mean(clu6$avg_dist) #3.112559
-mean(clu6$avg) #0.6960601
-mean(clu6$ppb) # gives NA
+mean(clu6$avg_dist)
+mean(clu6$avg)
+mean(clu6$ppb)
 
 #register_google("AIzaSyDsXl1rUspZ1sLY_dnMrb1urJq_O0rVFTY")
 
@@ -165,6 +157,14 @@ mean(clu6$ppb) # gives NA
 load("/Users/qing/Desktop/Clustering/Project/boston.RData")
 #map <- get_map(location = "Boston", zoom = 11)
 
+# get the map with 6 clusters and attractions - with legend
+ggmap(map, fullpage = TRUE) +
+  geom_point(data = combined3, aes(x = longitude, y = latitude, col = factor(clus)), size = 2)+
+  geom_point(data = attractions, aes(x = Lon, y = Lat, col='attraction'), size = 5) +
+  scale_color_manual(name=, values=c('1'='pink', '2'='yellow','3'='blue','4'='orange','5'='green', '6'='red', 'attraction'='black'), labels=c('Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4', 'Cluster 5', 'Cluster 6','Attractions'))
+
+
+# get individual cluser's map
 ggmap(map, fullpage = TRUE) +
   geom_point(data = clu1, aes(x = longitude, y = latitude), color = 'pink', size = 2) +
   geom_point(data = clu2, aes(x = longitude, y = latitude), color = 'yellow', size = 2) +
@@ -172,10 +172,34 @@ ggmap(map, fullpage = TRUE) +
   geom_point(data = clu4, aes(x = longitude, y = latitude), color = 'orange', size = 2) +
   geom_point(data = clu5, aes(x = longitude, y = latitude), color = 'green', size = 2) +
   geom_point(data = clu6, aes(x = longitude, y = latitude), color = 'red', size = 2) +
-  geom_point(data = attractions8, aes(x = Lon, y = Lat), color = 'black', size = 5)
+  geom_point(data = attractions, aes(x = Lon, y = Lat), color = 'black', size = 5) 
 
-ggmap(map, fullpage = TRUE) +
-  geom_point(data = clu3, aes(x = longitude, y = latitude), color = 'blue', size = 2)+
-  geom_point(data = attractions8, aes(x = Lon, y = Lat), color = 'black', size = 5)
 #Save map
 #save(map,file = "boston_2.RData")
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+library("dplyr")
+
+words_and_clusters6 <- new_reviews %>% right_join(clu6,'listing_id')
+words_and_clusters3 <- new_reviews %>% right_join(clu3,'listing_id')
+words_and_clusters1 <- new_reviews %>% right_join(clu1,'listing_id')
+words_and_clusters4 <- new_reviews %>% right_join(clu4,'listing_id')
+
+
+
+temp <- words_and_clusters6 %>% group_by('word') %>% 
+  count(word, sort = TRUE)
+set.seed(8675309)
+wordcloud(words = temp$word, freq = temp$nn, min.freq = 1,
+          max.words=100, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+temp <- words_and_clusters4 %>% group_by('word') %>% 
+  count(word, sort = TRUE)
+set.seed(8675309)
+
+wordcloud(words = temp$word, freq = temp$nn, min.freq = 1,
+          max.words=100, random.order=FALSE, rot.per=0.25, 
+          colors=brewer.pal(8, "Dark2"))
