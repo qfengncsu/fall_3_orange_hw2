@@ -198,3 +198,4 @@ for (i in 1:n){
 hist(NPV_project, breaks=50, main='Project NPV Distribution', xlab='Value ($)')
 range(NPV_project)
 mean(NPV_project)
+
