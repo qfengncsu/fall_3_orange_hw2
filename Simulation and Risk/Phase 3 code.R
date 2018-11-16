@@ -34,7 +34,8 @@ CVaR5 = mean(tail$prop_producing)
 hist(prop_producing$prop_producing, main='Distribution of Proportion of Producing Wells', xlab='Proportion of Producing Wells')
 abline(v = VaR5, col="red", lwd=2)
 mtext("5% Value at Risk", at=VaR5, col="red")
-abline(v = CVaR5, col="blue")
+abline(v = CVaR5, col="blue", lwd=2, lty=2)
+text(x=0.5, y=12000, "Expected Shortfall", col="blue", srt=90)
 
 hist(rnormTrunc(n=n, mean=0.99, sd=0.05, min=0, max=1), main='Distribution of Probability of Hydrocarbons', xlab='Probability of Hydrocarbons')
 
