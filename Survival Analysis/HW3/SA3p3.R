@@ -2,7 +2,7 @@ setwd("C:\\Users\\amool\\OneDrive - North Carolina State University\\Desktop\\Su
 
 katrina <- fread('katrina.csv') 
 
-subset <- katrina %>% filter(survive==0)  %>% filter(reason==1)
+#subset <- katrina %>% filter(survive==0)  %>% filter(reason==1)
 # have one for survival analysis anyway 
 katrina$ID <- 1:nrow(katrina)
 katrina <- katrina %>% filter(ID != 442, ID != 631, ID != 645)
