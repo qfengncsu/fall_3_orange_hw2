@@ -1,0 +1,49 @@
+######## ########## ############# ########
+########### Simulation HW 3 ##############
+######## ########## ############# ########
+
+library(graphics)
+library(ks)
+library(readxl)
+library(ggplot2)
+library(triangle)
+library(reshape2)
+library(purrr)
+
+#simulation for the number of wells
+list = rep(seq(10,30),100000)
+list = sample(list,10000)
+
+#create function to do the truncate distribution
+random.sample = function(x,n,min,max){
+        a = rep(0,n)
+        for(i in 1:n){
+                success = FALSE
+                a[i] = sample(x = x, size =1)
+                while(!(a[i] <= max && a[i] >= min)){
+                        a[i] = sample(x = x, size =1)
+                }
+        }
+        return(a)
+}
+
+#simulation of the truncate distribution for hydrocarbons
+
+trancate_hc_sample = rnorm(100000, mean = 0.99,sd = 0.05 )
+trancate_hc = random.sample(trancate_hc_sample, 10000, 0,1)
+hist(trancate_hc)
+
+#simulation of the truncate distribution for reservior
+trancate_rs_sample = rnorm(100000, mean = 0.8,sd = 0.1 )
+trancate_rs = random.sample(trancate_rs_sample, 10000, 0,1)
+hist(trancate_rs)
+
+number = rep(0,10000)
+
+for(i in 1:10000){
+        a = rbernoulli(list[i], trancate_hc[i])
+        b = rbernoulli(list[i], trancate_rs[i])
+        number[i] = sum(a*b)/list[i]
+}
+VaR5 = quantile(number, 0.05)
+CVaR5 = mean(number[number < VaR5])
