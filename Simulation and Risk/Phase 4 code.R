@@ -66,7 +66,7 @@ destandardize <- function(x.std, x){
 R <- matrix(data=cbind(1, 0.64, 0.64, 1), nrow=2)  # For IP and decline rate correlation
 U <- t(chol(R))       # finds the Choleski decomposition, t is the transpose function
 ############################################################
-n = 1000
+n = 1000000
 
 NPV_project <- rep(0,n)
 
@@ -197,5 +197,31 @@ for (i in 1:n){
 
 hist(NPV_project, breaks=50, main='Project NPV Distribution', xlab='Value ($)')
 range(NPV_project)
-mean(NPV_project)
+mean(NPV_project)      # This is the expected return for the project
+VaR_project = quantile(NPV_project, 0.05, na.rm=T)  # Get 5% VaR
+ES_project = mean(NPV_project[NPV_project < VaR_project])  # Gets the expected shortfall for 5% VaR
 
+
+# Confidence Intervals for Value at Risk & Expected Shortfall - Bootstrap Approach #
+n.bootstraps <- 1000
+sample.size <- 1000
+
+mean.boot <- rep(0,n.bootstraps)
+VaR.boot <- rep(0,n.bootstraps)
+ES.boot <- rep(0,n.bootstraps)
+for(i in 1:n.bootstraps){
+  bootstrap.sample <- sample(NPV_project, size=sample.size)
+  mean.boot[i] <- mean(bootstrap.sample)
+  VaR.boot[i] <- quantile(bootstrap.sample, VaR.percentile, na.rm=TRUE)
+  ES.boot[i] <- mean(bootstrap.sample[bootstrap.sample < VaR.boot[i]], na.rm=TRUE)
+}
+
+# Get 95% Confidence Interval for Expected Return, VaR, and Expected Shortfall
+ER.boot.U <- quantile(mean.boot, 0.975, na.rm=TRUE)
+ER.boot.L <- quantile(mean.boot, 0.025, na.rm=TRUE)
+
+VaR.boot.U <- quantile(VaR.boot, 0.975, na.rm=TRUE)
+VaR.boot.L <- quantile(VaR.boot, 0.025, na.rm=TRUE)
+
+ES.boot.U <- quantile(ES.boot, 0.975, na.rm=TRUE)
+ES.boot.L <- quantile(ES.boot, 0.025, na.rm=TRUE)
