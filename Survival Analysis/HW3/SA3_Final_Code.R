@@ -118,63 +118,6 @@ katrina <- fread('katrina.csv')
 katrina$ID <- 1:nrow(katrina)
 katrina <- katrina %>% filter(ID != 442, ID != 631, ID != 645)
 
-# fit proportional hazards model using coxph()
-# same structure as everything else
-fit_cox <- coxph(Surv(time = hour, event = reason %in% c(2, 3)) ~ backup + bridgecrane + servo + trashrack + elevation +
-                   slope + age, data=katrina)
-summary(fit_cox)
-
-# plot survival curve
-ggsurvplot(survfit(fit_cox), data = katrina, legend = "none", break.y.by = 0.1,
-           xlab = "hour", ylab = "survival probability")
-# who is this reference population?
-fit_cox$means
-
-
-### plot residuals
-# create data frame with the event, time, martingale residuals, deviance
-# residuals, and ID variable
-resids <- data.frame(event = fit_cox$y[,dim(fit_cox$y)[2]],
-                     time = fit_cox$y[,dim(fit_cox$y)[2] - 1],
-                     res_m = residuals(fit_cox, type = "martingale"),
-                     res_d = residuals(fit_cox, type = "deviance"),
-                     ID = 1:length(residuals(fit_cox)))
-# martingale vs. time
-ggplot(resids, aes(x = time, y = res_m, color = factor(event))) +
-  geom_point() +
-  labs(x = "hour", y = "martingale residuals", color = "event") +
-  scale_color_manual(values = c("purple", "orange"))
-# deviance vs. time
-ggplot(resids, aes(x = time, y = res_d, color = factor(event))) +
-  geom_point() +
-  labs(x = "hour", y = "deviance residuals", color = "event") +
-  scale_color_manual(values = c("purple", "orange"))
-# deviance vs. ID, to see which one is the largest
-ggplot(resids, aes(x = ID, y = res_d, color = factor(event))) +
-  geom_point() +
-  labs(x = "ID", y = "deviance residuals", color = "event") +
-  scale_color_manual(values = c("purple", "orange"))
-# or you can just find the observation corresponding to the max deviance res.
-which.max(resids$res_d) # it's observation 101
-
-### dfbetas
-ggcoxdiagnostics(fit_cox, type = "dfbetas")
-
-### checking linearity
-# age
-library(visreg)
-visreg(fit_cox, "age", xlab = "age", ylab = "partial residuals", gg = TRUE,
-       band = FALSE) +
-  geom_smooth(col = "red", fill = "red") + theme_bw()
-# slope
-visreg(fit_cox, "slope", xlab = "slope", ylab = "partial residuals",
-       gg = TRUE, band = FALSE) +
-  geom_smooth(col = "red", fill = "red") + theme_bw()
-# elevation
-visreg(fit_cox, "elevation", xlab = "elevation", ylab = "partial residuals",
-       gg = TRUE, band = FALSE) +
-  geom_smooth(col = "red", fill = "red") + theme_bw()
-
 
 #Convert to long
 
