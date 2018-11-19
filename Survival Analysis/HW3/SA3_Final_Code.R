@@ -93,20 +93,6 @@ ggsurvplot(survfit(fit_trashrack), data = katrina, fun = "cloglog",
            palette = c("#36688D", "#F18904"), legend.labs = c("no", "yes"),
            legend.title = "Trashrack Clenaer", xlab = "log(hour)")
 
-# 2. fit AFT models using survreg()
-# like glm(), there's a "dist" argument (default is weibull) that we'll get to
-# in a bit, but everything else works the same as you've seen before
-fit.aft <- survreg(Surv(time=hour, event=reason %in% c(2,3)) ~ backup + bridgecrane + servo + trashrack + elevation +
-                     slope + age, data = katrina, dist = "weibull")
-# and you can call a summary, which gives coefficient estimates, SEs, etc.
-# notice the test for log(scale), which is testing whether log(scale) = 0,
-# meaning testing if exponential is ok
-summary(fit.aft)
-exp(coef(fit)) # exponentiate estimates
-
-# 3. checking assumptions
-# 3.1 checking effects are constant
-
 
 
 setwd("C:\\Users\\amool\\OneDrive - North Carolina State University\\Desktop\\Survival Analysis\\survivalcsv\\")
