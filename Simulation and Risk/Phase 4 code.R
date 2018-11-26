@@ -66,7 +66,7 @@ destandardize <- function(x.std, x){
 R <- matrix(data=cbind(1, 0.64, 0.64, 1), nrow=2)  # For IP and decline rate correlation
 U <- t(chol(R))       # finds the Choleski decomposition, t is the transpose function
 ############################################################
-n = 1000000
+n = 100000
 
 NPV_project <- rep(0,n)
 
@@ -195,7 +195,7 @@ for (i in 1:n){
   NPV_project[i] = sum(well_value)
 }
 
-hist(NPV_project, breaks=50, main='Project NPV Distribution', xlab='Value ($)')
+hist(NPV_project, breaks=75, main='Project NPV Distribution', xlab='Value ($)')
 range(NPV_project)
 mean(NPV_project)      # This is the expected return for the project
 VaR_project = quantile(NPV_project, 0.05, na.rm=T)  # Get 5% VaR
