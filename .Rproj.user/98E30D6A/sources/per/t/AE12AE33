@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1542982909925.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3581240061",
+    "id" : "AE12AE33",
+    "lastKnownWriteTime" : 1541866413,
+    "last_content_update" : 1541866413,
+    "path" : "~/Documents/GitHub/fall_3_orange_hw2/Simulation and Risk/HW1.R",
+    "project_path" : "Simulation and Risk/HW1.R",
+    "properties" : {
+        "cursorPosition" : "36,0",
+        "scrollLine" : "25"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
