@@ -1,7 +1,7 @@
 rm(list=ls()); gc()
 
 setwd("C:/Users/Carlos7/Desktop/Courses/Clustering/Final_Project")
-
+setwd("C:/Users/Bill/Documents/NCSU/Course Work/Fall/Clustering/Data")
 
 library(dplyr)
 library(splines)
@@ -205,12 +205,12 @@ aux_2 <- as.matrix(aux_2)
 class(aux_2)
 
 
-bl2_1 <- matrix(as.numeric(aux_2[1,-1]),60,1)
-bl2_2 <- matrix(as.numeric(aux_2[2,-1]),60,1)  #red
+bl2_1 <- matrix(as.numeric(aux_2[1,-1]),60,1) #black
+bl2_2 <- matrix(as.numeric(aux_2[2,-1]),60,1) #red
 bl2_3 <- matrix(as.numeric(aux_2[3,-1]),60,1) #green
 bl2_4 <- matrix(as.numeric(aux_2[4,-1]),60,1) #blue
-bl2_5 <- matrix(as.numeric(aux_2[5,-1]),60,1) #blue
-bl2_6 <- matrix(as.numeric(aux_2[6,-1]),60,1) #blue
+bl2_5 <- matrix(as.numeric(aux_2[5,-1]),60,1) #orange
+bl2_6 <- matrix(as.numeric(aux_2[6,-1]),60,1) #purple
 
 
 plot(times,as.matrix(X)%*%bl2_1,ylab="ML",xlab = "Time",type = 'l',lwd=2,col=1, ylim = c(0,90))#,ylim=c(-5,5))
@@ -237,7 +237,8 @@ sum(bl2_4 * 0.01) # Least lung capacity  - Cluster 4
 sum(bl2_5 * 0.01)
 sum(bl2_6 * 0.01) # Longest lung capacity  - Cluster 6
 
-
+plot(times,as.matrix(X)%*%bl2_4,ylab="ML",xlab = "Time",type = 'l',lwd=2,col=1, ylim = c(0,30))
+lines(times,X%*%bl3,lwd=2,col=2)
 
 cdata$class <- as.numeric(cdata$class)
 
