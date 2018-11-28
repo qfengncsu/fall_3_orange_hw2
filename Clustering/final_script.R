@@ -83,7 +83,7 @@ bl3 <- matrix(aux_1[3,-1],60,1) #green
 lines(times,X%*%bl3,lwd=2,col=3)
 bl4 <- matrix(aux_1[4,-1],60,1) #blue
 lines(times,X%*%bl4,lwd=2,col=4)
-legend(2, 70, legend=c("Cluster 1", "Cluster 2", "Cluster 3","Cluster 4"),
+legend(1.8, 70, legend=c("Cluster 1", "Cluster 2", "Cluster 3","Cluster 4"),
        col=c("black","red","green" ,"blue"),lty=1,  cex=1 , y.intersp = 0.6)
 
 
@@ -96,7 +96,7 @@ legend(2, 70, legend=c("Cluster 1", "Cluster 2", "Cluster 3","Cluster 4"),
 
 bl3 <- matrix(aux_1[3,-1],60,1) #green
 plot(times,X%*%bl3,ylab="ML",xlab = "Time",type = 'l',lwd=2,col="green")#,ylim=c(-5,5))
-legend(2, 20, legend=c("Cluster 3"),
+legend(1.8, 20, legend=c("Cluster 3"),
        col=c("green"),lty=1,  cex=1 , y.intersp = 0.6)
 
 #aux_2 <- aggregate(cdata[,2:65], by = list(cdata$clust), mean, na.rm=TRUE)
@@ -165,7 +165,7 @@ print(x_means[1:5,-4])
 plot(times,as.matrix(X)%*%bl1,ylab="ML",xlab = "Time",type = 'l',lwd=2,col="black", ylim = c(0,95))#red
 lines(times,X%*%bl2,lwd=2,col="red") #green
 lines(times,X%*%bl4,lwd=2,col="blue") #blue
-legend(2, 70, legend=c("Cluster 1", "Cluster 2","Cluster 4"),
+legend(1.8, 70, legend=c("Cluster 1", "Cluster 2","Cluster 4"),
        col=c("black","red" ,"blue"),lty=1,  cex=1 , y.intersp = 0.6)
 
 
@@ -219,7 +219,7 @@ lines(times,X%*%bl2_3,lwd=2,col=3)
 lines(times,X%*%bl2_4,lwd=2,col=4)
 lines(times,X%*%bl2_5,lwd=2,col="orange")
 lines(times,X%*%bl2_6,lwd=2,col="purple")
-legend(2, 70, legend=c("Cluster 1", "Cluster 2", "Cluster 3","Cluster 4", "Cluster 5","Cluster 6"),
+legend(1.8, 70, legend=c("Cluster 1", "Cluster 2", "Cluster 3","Cluster 4", "Cluster 5","Cluster 6"),
        col=c("black","red","green" ,"blue","orange","purple"),lty=1,  cex=1 , y.intersp = 0.6)
 
 
